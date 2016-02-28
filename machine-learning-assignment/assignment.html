@@ -96,9 +96,9 @@ training &lt;- training[ , apply(training, 2, function(x) !any(is.na(x)))]
 dim(training)</code></pre>
 <pre><code>## [1] 19622    52</code></pre>
 </div>
-<div id="training-models-decision-tree-and-random-forest" class="section level2">
-<h2>Training Models: Decision Tree and Random Forest</h2>
-<p>We are going to explore two options, from simple to more complex. First, we will try a model based on a decision tree; then a more elaborate model, consisting on a random forest.</p>
+<div id="building-and-training-models-decision-tree-and-random-forest" class="section level2">
+<h2>Building and Training Models: Decision Tree and Random Forest</h2>
+<p>We are going to explore two models, from simple to more complex. First, we will try a model based on a decision tree; then a more elaborate model, consisting on a random forest.</p>
 <p>We will use 10-fold cross-validation in both cases, taking advantage of the configuration options of the “train” function (by setting trControl to method=“cv” (cross-validation), and number=10 (10-fold)).</p>
 <p>In the case of the random forest, we limit the trees to 5 for computational reasons.</p>
 <pre class="r"><code>train_control &lt;- trainControl(method=&quot;cv&quot;, number=10)
@@ -111,8 +111,8 @@ tree &lt;- train(classe ~ ., data=training, method=&quot;rpart&quot;, trControl=
 <pre><code>## randomForest 4.6-12
 ## Type rfNews() to see new features/changes/bug fixes.</code></pre>
 </div>
-<div id="evaluating-and-choosing-a-model" class="section level2">
-<h2>Evaluating and Choosing a Model</h2>
+<div id="evaluating-and-choosing-a-model-out-of-sample-error" class="section level2">
+<h2>Evaluating and Choosing a Model (Out of Sample Error)</h2>
 <p>After the models are built, we inspect their performance.</p>
 <pre class="r"><code>print(tree)</code></pre>
 <pre><code>## CART 
@@ -150,13 +150,14 @@ tree &lt;- train(classe ~ ., data=training, method=&quot;rpart&quot;, trControl=
 ## Resampling results across tuning parameters:
 ## 
 ##   mtry  Accuracy   Kappa      Accuracy SD  Kappa SD   
-##    2    0.9639702  0.9544093  0.005210962  0.006601980
-##   26    0.9849146  0.9809188  0.002656889  0.003360852
-##   51    0.9804811  0.9753087  0.004410407  0.005580735
+##    2    0.9690149  0.9607998  0.003852058  0.004870138
+##   26    0.9837421  0.9794329  0.003438892  0.004351679
+##   51    0.9803283  0.9751142  0.002531636  0.003199810
 ## 
 ## Accuracy was used to select the optimal model using  the largest value.
 ## The final value used for the model was mtry = 26.</code></pre>
-<p>The accuracy of the decision tree is extremely poor, while the random forest is very good. Therefore, we will use the random forest for our predictions.</p>
+<p>Using the data from the models, which includes the accuracy after the 10-fold cross-validation process, the out-of-sample errors are around 50% and 2% for the decision tree and random forest respectively (accuracies: 0.50 and 0.98).</p>
+<p>Therefore, we will use the random forest for our predictions.</p>
 </div>
 <div id="predicting" class="section level2">
 <h2>Predicting</h2>

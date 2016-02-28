@@ -36,9 +36,9 @@ dim(training)
 ```
 
 
-## Training Models: Decision Tree and Random Forest
+## Building and Training Models: Decision Tree and Random Forest
 
-We are going to explore two options, from simple to more complex. First, we will try a model based on a decision tree; then a more elaborate model, consisting on a random forest.
+We are going to explore two models, from simple to more complex. First, we will try a model based on a decision tree; then a more elaborate model, consisting on a random forest.
 
 We will use 10-fold cross-validation in both cases, taking advantage of the configuration options of the "train" function (by setting trControl to method="cv" (cross-validation), and number=10 (10-fold)).
 
@@ -51,7 +51,7 @@ tree <- train(classe ~ ., data=training, method="rpart", trControl=train_control
 rf <- train(classe ~ ., data=training, method="rf", ntree=5, trControl=train_control)
 ```
 
-## Evaluating and Choosing a Model
+## Evaluating and Choosing a Model (Out of Sample Error)
 
 After the models are built, we inspect their performance.
 
@@ -60,7 +60,9 @@ print(tree)
 print(rf)
 ```
 
-The accuracy of the decision tree is extremely poor, while the random forest is very good. Therefore, we will use the random forest for our predictions.
+Using the data from the models, which includes the accuracy after the 10-fold cross-validation process, the out-of-sample errors are around 50% and 2% for the decision tree and random forest respectively (accuracies: 0.50 and 0.98).
+
+Therefore, we will use the random forest for our predictions.
 
 ## Predicting
 
