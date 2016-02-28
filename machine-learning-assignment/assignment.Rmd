@@ -1,0 +1,73 @@
+---
+title: "Prediction Assignment Writeup"
+author: "Pablo López-García"
+date: "28 February 2016"
+output: html_document
+---
+
+This is the final assignment for the Cousera Machine Learning course. The aim is to build a model to predict the
+"classe" variable in a sample of 20 observations. This reports briefly explains how the model was built, the decisions
+made, and the final values for the predictions.
+
+## Environment set up and data loading
+
+First, the environment was appropriately set up, using both cores of the machine and data were loaded (both the one for training the model, and the one used to predict later).
+
+```{r}
+setwd("~/Google Drive/Coursera/DataScience/Machine Learning/assignment")
+
+library(caret)
+library(doMC)
+doMC::registerDoMC(cores=2)
+
+training <- read.csv("pml-training.csv", quote="\"", header=T, na.strings = c("NA", "", "#DIV/0!"))
+to_predict <- read.csv("pml-testing.csv", quote="\"", header=T, na.strings = c("NA", "", "#DIV/0!"))
+```
+
+## Data Cleaning
+
+The dataset to build the model was loaded and cleaned. The first eight columns were removed, as those predictores were irrelevant. All other predictors containing "NA" values were also removed. 51 predictors were finally taken into account.
+
+```{r}
+training <- training[,-c(1:8)]
+training <- training[ , apply(training, 2, function(x) !any(is.na(x)))]
+
+dim(training)
+```
+
+
+## Training Models: Decision Tree and Random Forest
+
+We are going to explore two options, from simple to more complex. First, we will try a model based on a decision tree; then a more elaborate model, consisting on a random forest.
+
+We will use 10-fold cross-validation in both cases, taking advantage of the configuration options of the "train" function (by setting trControl to method="cv" (cross-validation), and number=10 (10-fold)).
+
+In the case of the random forest, we limit the trees to 5 for computational reasons.
+
+```{r}
+train_control <- trainControl(method="cv", number=10)
+
+tree <- train(classe ~ ., data=training, method="rpart", trControl=train_control)
+rf <- train(classe ~ ., data=training, method="rf", ntree=5, trControl=train_control)
+```
+
+## Evaluating and Choosing a Model
+
+After the models are built, we inspect their performance.
+
+```{r}
+print(tree)
+print(rf)
+```
+
+The accuracy of the decision tree is extremely poor, while the random forest is very good. Therefore, we will use the random forest for our predictions.
+
+## Predicting
+
+We get the final predictions for the sample of 20 observations.
+
+```{r}
+predict(rf, to_predict)
+```
+
+These results were validated in the Course Project Prediction Quiz, where once introduced all were shown correct.
